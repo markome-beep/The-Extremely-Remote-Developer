@@ -20,11 +20,11 @@ jobs:
           cache: npm
           cache-dependency-path: './svelte-game-ui/'
 
-      # - name: Change Dir
-      #   run: cd ./svelte-game-ui
-      #
-      # - name: Install dependencies
-      #   run: npm install
+      - name: Change Dir
+        run: cd ./svelte-game-ui
+
+      - name: Install dependencies
+        run: npm install
 
       - name: build
         env:
