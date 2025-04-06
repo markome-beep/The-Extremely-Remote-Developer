@@ -10,7 +10,7 @@
 	};
 
 	let width = new Tween(0.5, ops);
-	let height = new Tween(10);
+	let height = new Tween(20);
 	let angle = new Tween(Math.PI / 2, ops);
 	let radius = new Tween(0.2);
 	let hovered = false;
@@ -27,7 +27,7 @@
 				return;
 			}
 			open = false;
-			height.target = 10;
+			//height.target = 20;
 			width.target = 0.5;
 			angle.target = Math.PI / 2;
 			radius.target = 0.2;
@@ -36,7 +36,7 @@
 
 	const expand = () => {
 		hovered = true;
-		height.target = 15;
+		//height.target = 20;
 		width.target = 5;
 		angle.target = Math.PI / 3;
 		radius.target = 0.5;
@@ -76,7 +76,7 @@
 -->
 	{/if}
 
-	<svg viewBox="0 0 {width.current} {height.current}" class="h-3/4 cursor-pointer overflow-visible">
+	<svg viewBox="0 0 {1} {20}" class="h-3/4 overflow-visible">
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<path
@@ -89,6 +89,7 @@
 					expand();
 				}
 			}}
+			class="cursor-pointer"
 			onmouseenter={expand}
 			onmouseleave={minimize}
 			{d}
