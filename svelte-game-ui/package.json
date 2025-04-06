@@ -7,7 +7,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
+		"prepare": "lezer-generator src/lib/bot.grammar -o src/lib/lezer.js && svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
@@ -26,5 +26,18 @@
 		"tailwindcss": "^4.0.0",
 		"typescript": "^5.0.0",
 		"vite": "^6.2.5"
+	},
+	"dependencies": {
+		"@codemirror/theme-one-dark": "^6.1.2",
+		"@lezer/common": "^1.2.3",
+		"@lezer/generator": "^1.7.3",
+		"@lezer/highlight": "^1.2.1",
+		"@lezer/lr": "^1.4.2",
+		"@replit/codemirror-vim": "^6.3.0",
+		"codemirror": "^6.0.1",
+		"pixi.js": "^8.9.1",
+		"vite-plugin-top-level-await": "^1.5.0",
+		"vite-plugin-wasm": "^3.4.1",
+		"wasm-game-state": "file:../wasm-game-state/pkg"
 	}
 }

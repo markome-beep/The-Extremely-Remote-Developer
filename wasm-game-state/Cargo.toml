@@ -3,4 +3,11 @@ name = "wasm-game-state"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
+ariadne = "0.5.1"
+chumsky = "0.10.0"
+logos = "0.15.0"
+wasm-bindgen = "0.2.100"
