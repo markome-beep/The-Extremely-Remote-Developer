@@ -13,17 +13,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Change Dir
+        run: cd ./svelte-game-ui
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
-      - name: Change Dir
-        run: cd ./svelte-game-ui
-
-      - name: Install dependencies
-        run: npm install
 
       - name: build
         env:
