@@ -2,6 +2,7 @@ export type applicationState = 'game' | 'editor';
 export type appContext = {
 	state: applicationState;
 	paused: boolean;
+	bots: bot[];
 	selectedBot:
 	| 0
 	| 1
@@ -24,3 +25,7 @@ export type appContext = {
 	| 18
 	| 19;
 };
+export type bot = {
+	script: string,
+	id: number
+}
