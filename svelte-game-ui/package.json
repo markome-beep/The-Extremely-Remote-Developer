@@ -36,6 +36,7 @@
 		"@replit/codemirror-vim": "^6.3.0",
 		"codemirror": "^6.0.1",
 		"pixi.js": "^8.9.1",
+		"round-polygon": "^0.6.7",
 		"vite-plugin-top-level-await": "^1.5.0",
 		"vite-plugin-wasm": "^3.4.1",
 		"wasm-game-state": "file:../wasm-game-state/pkg"

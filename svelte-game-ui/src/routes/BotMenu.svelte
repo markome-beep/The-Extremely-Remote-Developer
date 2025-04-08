@@ -1,22 +1,32 @@
 <script lang="ts">
-	import { Tween } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
+	import { makePoly } from '$lib';
 	import type { appContext } from './types';
-	import HexDiv from './other/HexDiv.svelte';
 	let { app = $bindable() }: { app: appContext } = $props();
 
-	const ops = {
-		duration: 200,
-		easing: cubicOut
-	};
-
-	let width = new Tween(1 / 20, ops);
-	let height = 1;
-	let angle = new Tween(Math.PI / 2, ops);
-	let radius = new Tween(0.2 / 20);
-	let hovered = false;
+	let hovered = $state(false);
 	let pinned = $state(false);
-	let open = $state(false);
+
+	const closedShape = makePoly(
+		[
+			{ x: 0, y: 15 },
+			{ x: 4, y: 15 },
+			{ x: 4, y: 85 },
+			{ x: 0, y: 85 }
+		],
+		2
+	);
+
+	const openShape = makePoly(
+		[
+			{ x: 0, y: 0, r: 1 },
+			{ x: 40, y: 20 },
+			{ x: 40, y: 80 },
+			{ x: 0, y: 100, r: 1 }
+		],
+		2
+	);
+
+	let d = $state(closedShape);
 
 	const minimize = () => {
 		if (pinned) {
@@ -27,105 +37,71 @@
 			if (hovered) {
 				return;
 			}
-			open = false;
-			//height.target = 20;
-			width.target = 1 / 20;
-			angle.target = Math.PI / 2;
-			radius.target = 0.2 / 20;
+			d = closedShape;
 		}, 10);
 	};
 
 	const expand = () => {
 		hovered = true;
-		width.target = 5 / 20;
-		angle.target = Math.PI / 3;
-		radius.target = 0.5 / 20;
-		setTimeout(() => {
-			if (!hovered) {
-				return;
-			}
-			open = true;
-		}, 300);
+		d = openShape;
 	};
 
-	// This was figured out at 1am. I will not be taking further questions
-	let d = $derived(`
-	M ${Math.sin(angle.current) * radius.current} ${Math.cos(angle.current) * radius.current}
-	L ${width.current - Math.sin(angle.current) * radius.current} ${width.current / Math.tan(angle.current) - Math.cos(angle.current) * radius.current}
-	C ${width.current} ${width.current / Math.tan(angle.current)} ${width.current} ${width.current / Math.tan(angle.current)} ${width.current} ${width.current / Math.tan(angle.current) + radius.current}
-	L ${width.current} ${height - (width.current / Math.tan(angle.current) + radius.current)}
-	C ${width.current} ${height - width.current / Math.tan(angle.current)} ${width.current} ${height - width.current / Math.tan(angle.current)} ${width.current - Math.sin(angle.current) * radius.current} ${height - (width.current / Math.tan(angle.current) - Math.cos(angle.current) * radius.current)}
-	L ${Math.sin(angle.current) * radius.current} ${height - Math.cos(angle.current) * radius.current}
-	C 0 ${height} 0 ${height} 0 ${height - radius.current}
-	L 0 ${radius.current}
-	C 0 0 0 0 ${Math.sin(angle.current) * radius.current} ${Math.cos(angle.current) * radius.current}
-	`);
-
-	for (let i = 0; i < 15; i++) {
+	const addBot = (e?: MouseEvent, id?: number) => {
+		if (e) {
+			e.stopPropagation();
+		}
+		if (!id) {
+			id = app.bots.length;
+		}
 		app.bots.push({
 			script: '',
-			id: i
+			id
 		});
+	};
+
+	for (let i = 0; i < 15; i++) {
+		addBot(undefined, i);
 	}
 </script>
 
-<div class="absolute left-4 h-full">
-	<div class="relative flex h-full flex-col justify-center">
-		{#if open}
-			<!--
--->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div
-				onmouseenter={expand}
-				onmouseleave={minimize}
-				class="clipped-content pointer-events-none absolute flex h-3/4 w-full flex-col justify-center overflow-x-hidden overflow-y-scroll"
-			>
-				<ul class="ml-3 flex flex-col py-12">
-					{#each app.bots as bot}
-						<li class="odd:aspect-square odd:w-20 even:relative even:-top-10 even:left-17 even:h-0">
-							<div class="aspect-square w-20">
-								<HexDiv>{bot.id}</HexDiv>
-							</div>
-						</li>
-					{/each}
-					<!-- <li class="odd:aspect-square odd:w-20 even:relative even:-top-10 even:left-17 even:h-0"> -->
-					<!-- 	<div class="aspect-square w-20"> -->
-					<!-- 		<HexDiv onclick={addBot}>+</HexDiv> -->
-					<!-- 	</div> -->
-					<!-- </li> -->
-				</ul>
-			</div>
-		{/if}
-
-		<!-- I have to leave the view box as 1x1 for clip to work	 -->
-		<svg viewBox="0 0 1 1" class="h-3/4">
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<path
-				onclick={() => {
-					if (pinned) {
-						pinned = false;
-						minimize();
-					} else {
-						pinned = true;
-						expand();
-					}
-				}}
-				class="cursor-pointer"
-				onmouseenter={expand}
-				onmouseleave={minimize}
-				{d}
-				fill-opacity={pinned ? 0.7 : 0.4}
-			/>
-			<clipPath id="myClip" clipPathUnits="objectBoundingBox">
-				<path {d} />
-			</clipPath>
-		</svg>
+<div class="absolute left-4 flex h-full flex-col justify-center">
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<div
+		onclick={() => {
+			if (pinned) {
+				pinned = false;
+				hovered = false;
+				minimize();
+				return;
+			}
+			pinned = true;
+			expand();
+		}}
+		onmouseenter={expand}
+		onmouseleave={minimize}
+		class="aspect-square h-3/4 duration-400 {pinned ? 'bg-black/75' : 'bg-black/50'}"
+		style="clip-path: {d};"
+	>
+		<div class="flex h-full w-2/5 items-center justify-center">
+			<ul class="custom-scroll flex h-3/5 w-11/12 flex-col gap-1 overflow-y-auto px-1">
+				{#each app.bots as bot}
+					<button
+						class="rounded bg-black text-white {hovered ? 'block' : 'hidden'}"
+						onclick={(e) => e.stopPropagation()}>{bot.id}</button
+					>
+				{/each}
+				<button class="rounded bg-black text-white {hovered ? 'block' : 'hidden'}" onclick={addBot}
+					>+</button
+				>
+			</ul>
+		</div>
 	</div>
 </div>
 
 <style>
-	.clipped-content {
-		clip-path: url(#myClip);
+	.custom-scroll {
+		scrollbar-color: gray black;
+		scrollbar-width: thin;
 	}
 </style>

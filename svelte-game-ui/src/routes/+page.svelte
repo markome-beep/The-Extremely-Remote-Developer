@@ -6,7 +6,7 @@
 	let app: appContext = $state({ state: 'game', paused: false, selectedBot: 0, bots: [] });
 </script>
 
-<main class="relative h-svh bg-black">
+<main class="relative h-dvh overflow-hidden bg-black">
 	<BotMenu bind:app />
 	<Game bind:app />
 </main>
