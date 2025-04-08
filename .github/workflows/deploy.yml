@@ -12,6 +12,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Install wasm-pack
+        # run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+        uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: 'latest'
+
+      - name: Build Wasm
+        working-directory: ./wasm-game-state/
+        run: wasm-pack build
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -27,7 +42,8 @@ jobs:
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
         working-directory: ./svelte-game-ui
-        run: npm run build
+        run: npm run build --verbose
+
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
