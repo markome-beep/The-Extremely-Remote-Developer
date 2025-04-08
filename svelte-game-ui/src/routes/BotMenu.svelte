@@ -67,17 +67,17 @@
 <div class="absolute left-4 flex h-full flex-col justify-center">
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!--	onclick={() => {
+		if (pinned) {
+			pinned = false;
+			hovered = false;
+			minimize();
+			return;
+		}
+		pinned = true;
+		expand();
+	}} -->
 	<div
-		onclick={() => {
-			if (pinned) {
-				pinned = false;
-				hovered = false;
-				minimize();
-				return;
-			}
-			pinned = true;
-			expand();
-		}}
 		onmouseenter={expand}
 		onmouseleave={minimize}
 		class="aspect-square h-3/4 duration-400 {pinned ? 'bg-black/75' : 'bg-black/50'}"
