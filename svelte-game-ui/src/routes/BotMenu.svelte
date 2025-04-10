@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { makePoly } from '$lib';
 	import type { appContext } from './types';
-	let { app = $bindable() }: { app: appContext } = $props();
+	let { appCtx = $bindable() }: { appCtx: appContext } = $props();
 
 	let hovered = $state(false);
 	let pinned = $state(false);
@@ -38,7 +38,7 @@
 				return;
 			}
 			d = closedShape;
-		}, 10);
+		}, 0);
 	};
 
 	const expand = () => {
@@ -47,13 +47,13 @@
 	};
 
 	const addBot = (e?: MouseEvent, id?: number) => {
-		if (e) {
-			e.stopPropagation();
-		}
+		//if (e) {
+		//	e.stopPropagation();
+		//}
 		if (!id) {
-			id = app.bots.length;
+			id = appCtx.bots.length;
 		}
-		app.bots.push({
+		appCtx.bots.push({
 			script: '',
 			id
 		});
@@ -64,31 +64,22 @@
 	}
 </script>
 
-<div class="absolute left-4 flex h-full flex-col justify-center">
+<div class="pointer-events-none absolute left-4 z-10 flex h-full flex-col justify-center">
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!--	onclick={() => {
-		if (pinned) {
-			pinned = false;
-			hovered = false;
-			minimize();
-			return;
-		}
-		pinned = true;
-		expand();
-	}} -->
 	<div
 		onmouseenter={expand}
 		onmouseleave={minimize}
-		class="aspect-square h-3/4 duration-400 {pinned ? 'bg-black/75' : 'bg-black/50'}"
+		class="aspect-square h-3/4 duration-400 {pinned
+			? 'bg-black/75'
+			: 'bg-black/50'} pointer-events-auto"
 		style="clip-path: {d};"
 	>
 		<div class="flex h-full w-2/5 items-center justify-center">
 			<ul class="custom-scroll flex h-3/5 w-11/12 flex-col gap-1 overflow-y-auto px-1">
-				{#each app.bots as bot}
-					<button
-						class="rounded bg-black text-white {hovered ? 'block' : 'hidden'}"
-						onclick={(e) => e.stopPropagation()}>{bot.id}</button
+				{#each appCtx.bots as bot}
+					<button class="rounded bg-black text-white {hovered ? 'block' : 'hidden'}"
+						>{bot.id}</button
 					>
 				{/each}
 				<button class="rounded bg-black text-white {hovered ? 'block' : 'hidden'}" onclick={addBot}

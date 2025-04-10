@@ -1,8 +1,11 @@
+import type { GameData } from "wasm-game-state";
+
 export type applicationState = 'game' | 'editor';
 export type appContext = {
 	state: applicationState;
 	paused: boolean;
 	bots: bot[];
+	gameData: GameData;
 	selectedBot:
 	| 0
 	| 1
