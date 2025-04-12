@@ -1,14 +1,22 @@
 import { Assets, Container, Polygon, Sprite, Texture } from "pixi.js";
-import { TileKinds, type GameData } from "wasm-game-state";
+import { TileKinds, type GameData } from "$lib/wasm";
+import type { Remote } from "comlink";
 
 const row_off = [0, 16] as const;
 const col_off = [23, 8] as const;
 
-export const make_map = async (game: GameData) => {
+export const make_map = async (game: Remote<GameData>) => {
 	const hexContainer = new Container();
 
 	const grass: Texture = await Assets.load('grass');
-	const empty: Texture = await Assets.load('grass');
+	const empty: Texture = await Assets.load('wall');
+	const path: Texture = await Assets.load('wall');
+	const wall: Texture = await Assets.load('path');
+	grass.source.scaleMode = 'nearest';
+	empty.source.scaleMode = 'nearest';
+	path.source.scaleMode = 'nearest';
+	wall.source.scaleMode = 'nearest';
+
 	const hitArea = [
 		0, 15,
 		8, 7,
@@ -17,8 +25,6 @@ export const make_map = async (game: GameData) => {
 		24, 24,
 		8, 24
 	].map((e) => e - 16);
-	grass.source.scaleMode = 'nearest';
-	empty.source.scaleMode = 'nearest';
 
 	let nums = 10;
 	for (let i = 0; i < nums * 2 - 1; i++) {
@@ -26,20 +32,29 @@ export const make_map = async (game: GameData) => {
 			let t;
 			try {
 				console.log(`(${i}, ${j})`)
-				t = game.get_tile(i, j)
+				t = await game.get_tile(i, j)
 			} catch {
 				return hexContainer;
 			}
 
 			let tile;
 
-			switch (t.kind) {
+			switch (await t.kind) {
+
+				case TileKinds.Empty:
+					tile = Sprite.from(empty);
+					break;
+
 				case TileKinds.Grass:
 					tile = Sprite.from(grass);
 					break;
 
-				case TileKinds.Empty:
-					tile = Sprite.from(empty);
+				case TileKinds.Wall:
+					tile = Sprite.from(wall);
+					break;
+
+				case TileKinds.Path:
+					tile = Sprite.from(path);
 					break;
 
 				default:

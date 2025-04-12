@@ -16,5 +16,4 @@ chumsky = "0.10.0"
 console_error_panic_hook = { version = "0.1.7", optional = true }
 logos = "0.15.0"
 wasm-bindgen = "0.2.100"
-wasm-bindgen-futures = "0.4.50"
 web-sys = { version = "0.3.77", features = ["console"] }

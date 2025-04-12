@@ -1,11 +1,12 @@
 import type { GameData } from "wasm-game-state";
+import type { Remote } from "comlink";
 
 export type applicationState = 'game' | 'editor';
 export type appContext = {
 	state: applicationState;
 	paused: boolean;
 	bots: bot[];
-	gameData: GameData;
+	gameData: Remote<GameData>;
 	selectedBot:
 	| 0
 	| 1

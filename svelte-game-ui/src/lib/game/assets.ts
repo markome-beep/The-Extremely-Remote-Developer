@@ -1,5 +1,5 @@
 import { base } from "$app/paths";
-import { Assets, Spritesheet, type SpritesheetData, AnimatedSprite, Container, Sprite } from "pixi.js";
+import { Assets } from "pixi.js";
 
 export const load_assets = async () => {
 	const manifest = {
@@ -10,6 +10,14 @@ export const load_assets = async () => {
 					{
 						alias: 'grass',
 						src: `${base}/sprites/Hex_Tile.png`
+					},
+					{
+						alias: 'path',
+						src: `${base}/sprites/Path_Tile.png`
+					},
+					{
+						alias: 'wall',
+						src: `${base}/sprites/Wall_Tile.png`
 					}
 				]
 			},

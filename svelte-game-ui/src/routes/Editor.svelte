@@ -6,7 +6,7 @@
 	import { indentWithTab } from '@codemirror/commands';
 	import { vim } from '@replit/codemirror-vim';
 	import { onMount } from 'svelte';
-	import { parser } from '$lib/lezer';
+	import { parser } from '$lib/editor/lezer';
 	import { LanguageSupport, LRLanguage } from '@codemirror/language';
 
 	let div: HTMLDivElement;

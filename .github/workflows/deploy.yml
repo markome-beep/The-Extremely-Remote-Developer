@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Wasm
         working-directory: ./wasm-game-state/
-        run: wasm-pack build
+        run: wasm-pack build --target web --out-dir ../svelte-game-ui/src/lib/wasm
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -43,7 +43,6 @@ jobs:
           BASE_PATH: '/${{ github.event.repository.name }}'
         working-directory: ./svelte-game-ui
         run: npm run build --verbose
-
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3

@@ -1,4 +1,4 @@
-import { ast } from "wasm-game-state";
+import { ast } from "$lib/wasm";
 import roundPolygon, { getSegments } from 'round-polygon';
 
 // place files you want to import through the `$lib` alias in this folder.

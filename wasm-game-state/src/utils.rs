@@ -1,5 +1,4 @@
 use cfg_if::cfg_if;
-use wasm_bindgen::prelude::wasm_bindgen;
 
 cfg_if! {
     // When the `console_error_panic_hook` feature is enabled, we can call the
@@ -11,12 +10,4 @@ cfg_if! {
         #[inline]
         pub fn set_panic_hook() {}
     }
-}
-
-#[wasm_bindgen]
-extern "C" {
-    // Use `js_namespace` here to bind `console.log(..)` instead of just
-    // `log(..)`
-    #[wasm_bindgen(js_namespace = console)]
-    pub fn log(s: String);
 }
