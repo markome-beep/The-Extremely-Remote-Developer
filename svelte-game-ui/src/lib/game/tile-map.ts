@@ -2,8 +2,17 @@ import { Assets, Container, Polygon, Sprite, Texture } from "pixi.js";
 import { TileKinds, type GameData } from "$lib/wasm";
 import type { Remote } from "comlink";
 
-const row_off = [0, 16] as const;
-const col_off = [23, 8] as const;
+export const row_off = [0, 16] as const;
+export const col_off = [23, 8] as const;
+
+const hitArea = [
+	0, 15,
+	8, 7,
+	24, 7,
+	32, 15,
+	24, 24,
+	8, 24
+].map((e) => e - 16);
 
 export const make_map = async (game: Remote<GameData>) => {
 	const hexContainer = new Container();
@@ -16,15 +25,6 @@ export const make_map = async (game: Remote<GameData>) => {
 	empty.source.scaleMode = 'nearest';
 	path.source.scaleMode = 'nearest';
 	wall.source.scaleMode = 'nearest';
-
-	const hitArea = [
-		0, 15,
-		8, 7,
-		24, 7,
-		32, 15,
-		24, 24,
-		8, 24
-	].map((e) => e - 16);
 
 	let nums = 10;
 	for (let i = 0; i < nums * 2 - 1; i++) {
@@ -82,4 +82,46 @@ export const make_map = async (game: Remote<GameData>) => {
 	}
 
 	return hexContainer
+}
+
+export const renderTile = async (t: TileKinds, x: number, y: number, map: Container) => {
+
+	let texture: Texture;
+
+	switch (t) {
+
+		case TileKinds.Empty:
+			texture = await Assets.load('empty');
+			break;
+
+		case TileKinds.Grass:
+			texture = await Assets.load('grass');
+			break;
+
+		case TileKinds.Wall:
+			texture = await Assets.load('wall');
+			break;
+
+		case TileKinds.Path:
+			texture = await Assets.load('path');
+			break;
+
+		default:
+			texture = await Assets.load('empty');
+			console.error(`Unrecognized Tile Kind: ${t}\nTile Found at (${x}, ${y})`);
+	}
+
+	texture.source.scaleMode = 'nearest';
+	const tile = Sprite.from(texture);
+
+	tile.hitArea = new Polygon(hitArea);
+	tile.on('pointerover', () => { tile.alpha = 0.5 });
+	tile.on('pointerleave', () => { tile.alpha = 1 });
+	tile.eventMode = 'static';
+	tile.anchor.set(0.5);
+
+	tile.y = (row_off[1] * x + col_off[1] * y);
+	tile.x = (row_off[0] * x + col_off[0] * y);
+
+	map.addChild(tile);
 }

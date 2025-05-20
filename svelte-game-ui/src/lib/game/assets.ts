@@ -21,9 +21,18 @@ export const load_assets = async () => {
 					}
 				]
 			},
+			{
+				name: "bot",
+				assets: [
+					{
+						alias: 'bot',
+						src: `${base}/sprites/Up_Bot.png`
+					},
+				]
+			},
 		],
 	};
 
 	await Assets.init({ manifest });
-	Assets.backgroundLoadBundle(['tiles']);
+	Assets.backgroundLoadBundle(['tiles', 'bot']);
 }

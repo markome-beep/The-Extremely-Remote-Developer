@@ -1,32 +1,51 @@
 import * as Comlink from 'comlink';
-import init, { GameData } from '$lib/wasm';
+import init, { BotLite, Dir, GameData, TileKinds, type BotState } from '$lib/wasm';
 
-const load_wasm = (async () => {
-	await init();
-	return GameData.paths();
-})();
+export type Bot = {
+	x: number,
+	y: number,
+	dir: Dir
+	state: BotState
+	id: number
+}
 
-let u = new Proxy(
-	{},
-	{
-		get(_, prop) {
-			return async (...args: any) => {
-				console.log(`Calling: ${prop}`);
-				const realObj = await load_wasm;
-				const method: any = realObj[prop];
-				if (typeof method !== "function") throw new Error(`'${prop}' is not a function`);
-				const val = method.apply(realObj, args);
-				console.log(val);
+export type Game = {
+	initGame: () => Promise<boolean>;
+	gameData?: GameData
+	tick: () => Bot[]
+	getTile: (x: number, y: number) => TileKinds
+}
 
-				// If result is an object (likely a WASM class instance), proxy it
-				if (typeof val === 'object' && val !== null) {
-					return Comlink.proxy(val);
-				}
-
-				return val;
-			};
+const u: Game = {
+	async initGame() {
+		try {
+			await init();
+			this.gameData = GameData.paths();
+			return true
 		}
+		catch (e) {
+			return false
+		}
+	},
+
+	tick() {
+		let x: BotLite[] = this.gameData!.tick();
+
+		return x.map((b) => {
+			return {
+				x: b.x,
+				y: b.y,
+				dir: b.dir,
+				state: b.state,
+				id: b.id
+			}
+		});
+	},
+
+	getTile(x: number, y: number) {
+		let t = this.gameData!.get_tile(x, y);
+		return t.kind;
 	}
-);
+}
 
 Comlink.expose(u);

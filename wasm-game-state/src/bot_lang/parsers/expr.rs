@@ -11,6 +11,7 @@ pub enum Expr {
     Bool(bool),
     Ident(String),
     Nil,
+    Prens(Box<Expr>),
 
     // Unary minus.
     Neg(Box<Expr>),
@@ -18,7 +19,6 @@ pub enum Expr {
     Debug(SimpleSpan, Box<Expr>),
 
     // Binary operators
-
     // Sum
     Add(Box<Expr>, Box<Expr>),
     Sub(Box<Expr>, Box<Expr>),
@@ -38,6 +38,9 @@ pub enum Expr {
     // Equality
     Eq(Box<Expr>, Box<Expr>),
     NotEq(Box<Expr>, Box<Expr>),
+
+    // Assignment
+    Assignment(Box<Expr>, Box<Expr>),
 }
 
 pub fn parser<'a, I>() -> impl Parser<'a, I, Expr, extra::Err<Rich<'a, Token<'a>>>>
@@ -46,9 +49,10 @@ where
 {
     recursive(|p| {
         let atom = {
-            let unit = p
+            let parens = p
                 .clone()
-                .delimited_by(just(Token::LParen), just(Token::RParen));
+                .delimited_by(just(Token::LParen), just(Token::RParen))
+                .map(|expr| Expr::Prens(Box::new(expr)));
 
             let integer = select! {
                 Token::Integer(n) => Expr::Int(n.parse().unwrap()),
@@ -73,7 +77,7 @@ where
                 Token::Ident(s) => Expr::Ident(s.into())
             };
 
-            choice((unit, float, integer, string, r#bool, nil, ident))
+            choice((parens, float, integer, string, r#bool, nil, ident))
         };
         let debug = atom
             .clone()

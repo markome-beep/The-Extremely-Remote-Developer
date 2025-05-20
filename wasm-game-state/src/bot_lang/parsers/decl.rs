@@ -6,7 +6,6 @@ use super::expr::{Expr, parser as exprParser};
 #[derive(Debug)]
 pub enum Decl {
     VarDecl { ident: String, expr: Expr },
-    Assign { ident: String, expr: Expr },
     ExprStmt(Expr),
 }
 
@@ -37,15 +36,18 @@ where
         .then_ignore(just(Token::Semicolon))
         .map(|expr| Decl::ExprStmt(expr));
 
-    let assign = select! {
-        Token::Ident(s) => s.into()
-    }
-    .then_ignore(just(Token::Assign))
-    .then(exprParser())
-    .then_ignore(just(Token::Semicolon))
-    .map(|(ident, expr)| Decl::Assign { ident, expr });
+    //let assign = select! {
+    //    Token::Ident(s) => s.into()
+    //}
+    //.then_ignore(just(Token::Assign))
+    //.then(exprParser())
+    //.then_ignore(just(Token::Semicolon))
+    //.map(|(ident, expr)| Decl::Assign { ident, expr });
 
-    choice((bare_var, var, expr_stmt, assign))
-        .repeated()
-        .collect()
+    choice((
+        bare_var, var, expr_stmt,
+        //assign
+    ))
+    .repeated()
+    .collect()
 }

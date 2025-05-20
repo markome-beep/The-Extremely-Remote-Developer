@@ -1,8 +1,7 @@
 import { Container } from "pixi.js";
 import { load_assets } from "./assets";
-import { make_map } from "./tile-map";
-import type { GameData } from "$lib/wasm";
 import type { Remote } from "comlink";
+import type { Game } from "./game-worker";
 
 const make_camera = (stage: Container) => {
 	const camera = new Container;
@@ -51,9 +50,9 @@ const make_camera = (stage: Container) => {
 	return camera
 }
 
-export const init_game = async (stage: Container, gameData: Remote<GameData>) => {
+export const init_game = async (stage: Container, gameData: Remote<Game>) => {
 	load_assets();
 	const camera = make_camera(stage)
-	const hexContainer = await make_map(gameData);
-	camera.addChild(hexContainer);
+	await gameData.initGame();
+	return camera;
 }

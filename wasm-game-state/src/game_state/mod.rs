@@ -1,67 +1,12 @@
 use std::collections::HashMap;
-use web_sys::js_sys;
 
+use bot::{Bot, BotLite};
+use map::{CHUNK_SIZE, Chunk, Tile};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::utils;
-
-#[wasm_bindgen]
-#[repr(u8)]
-#[derive(Clone, Copy)]
-pub enum TileKinds {
-    Empty = 0,
-    Grass = 1,
-    Path = 3,
-    Wall = 4,
-}
-
-#[wasm_bindgen]
-#[derive(Clone, Copy)]
-pub struct Tile {
-    pub kind: TileKinds,
-}
-
-static CHUNK_SIZE: u8 = 10;
-#[derive(Clone)]
-struct Chunk {
-    tiles: Vec<Tile>,
-}
-
-impl Chunk {
-    fn new() -> Self {
-        let mut tiles = Vec::with_capacity((CHUNK_SIZE * CHUNK_SIZE).into());
-
-        for _x in 0..=CHUNK_SIZE {
-            for _y in 0..=CHUNK_SIZE {
-                tiles.push(Tile {
-                    kind: TileKinds::Grass,
-                });
-            }
-        }
-
-        Self { tiles }
-    }
-
-    fn random_paths() -> Self {
-        let mut tiles = Vec::with_capacity((CHUNK_SIZE * CHUNK_SIZE).into());
-
-        for _x in 0..=CHUNK_SIZE {
-            for _y in 0..=CHUNK_SIZE {
-                if 0.25 > js_sys::Math::random() {
-                    tiles.push(Tile {
-                        kind: TileKinds::Path,
-                    });
-                } else {
-                    tiles.push(Tile {
-                        kind: TileKinds::Wall,
-                    });
-                }
-            }
-        }
-
-        Self { tiles }
-    }
-}
+mod bot;
+mod map;
 
 enum ChunkGen {
     RandomPath,
@@ -72,6 +17,8 @@ enum ChunkGen {
 struct GameData {
     map: HashMap<(i32, i32), Chunk>,
     map_gen: ChunkGen,
+    bot: Vec<Bot>,
+    bot_count: i32,
 }
 
 #[wasm_bindgen]
@@ -85,6 +32,8 @@ impl GameData {
         Self {
             map,
             map_gen: ChunkGen::Grass,
+            bot: vec![],
+            bot_count: 1,
         }
     }
 
@@ -96,6 +45,8 @@ impl GameData {
         Self {
             map,
             map_gen: ChunkGen::RandomPath,
+            bot: vec![],
+            bot_count: 1,
         }
     }
 
@@ -117,5 +68,16 @@ impl GameData {
                 ChunkGen::Grass => Chunk::new(),
             })
             .tiles[(local_x + local_y * CHUNK_SIZE as i32) as usize]
+    }
+
+    pub fn tick(&mut self) -> Vec<BotLite> {
+        self.bot.iter_mut().map(|b| b.tick()).collect()
+    }
+
+    pub fn add_bot(&mut self) -> BotLite {
+        let mut b = Bot::new(0, 0, self.bot_count);
+        self.bot_count += 1;
+        self.bot.push(b);
+        self.bot.last_mut().unwrap().tick()
     }
 }

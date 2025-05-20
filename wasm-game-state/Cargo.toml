@@ -15,5 +15,7 @@ cfg-if = "1.0.0"
 chumsky = "0.10.0"
 console_error_panic_hook = { version = "0.1.7", optional = true }
 logos = "0.15.0"
+serde = "1.0.219"
+tsify-next = { version = "0.5.5", features = ["js"] }
 wasm-bindgen = "0.2.100"
 web-sys = { version = "0.3.77", features = ["console"] }

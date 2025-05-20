@@ -57,12 +57,8 @@ pub enum Token<'src> {
     Or,
 
     // Debug Op
-    #[token("$")]
-    Debug,
-
-    // Eatly Error Return
     #[token("?")]
-    EarlyReturn,
+    Debug,
 
     // Grouping
     #[token("(")]
@@ -113,6 +109,9 @@ pub enum Token<'src> {
 
     #[regex("[_a-zA-Z][_a-zA-Z0-9]*")]
     Ident(&'src str),
+
+    #[regex("~[_a-zA-Z][_a-zA-Z0-9]*")]
+    SpecialIdent(&'src str),
 
     #[token("false")]
     False,
@@ -173,8 +172,7 @@ impl fmt::Display for Token<'_> {
             Token::Not => write!(f, "!"),
             Token::And => write!(f, "&&"),
             Token::Or => write!(f, "||"),
-            Token::Debug => write!(f, "$"),
-            Token::EarlyReturn => write!(f, "?"),
+            Token::Debug => write!(f, "?"),
             Token::LParen => write!(f, "("),
             Token::RParen => write!(f, ")"),
             Token::LBrackt => write!(f, "["),
@@ -189,6 +187,7 @@ impl fmt::Display for Token<'_> {
             Token::Integer(s) => write!(f, "{}", s),
             Token::String(s) => write!(f, "{}", s),
             Token::Ident(s) => write!(f, "{}", s),
+            Token::SpecialIdent(s) => write!(f, "{}", s),
             Token::False => write!(f, "false"),
             Token::True => write!(f, "true"),
             Token::Nil => write!(f, "nil"),

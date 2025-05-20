@@ -2,14 +2,15 @@ use std::io::Cursor;
 
 use ariadne::{Color, Label, Report, ReportKind, Source};
 use chumsky::{
-    input::{Input, Stream},
     Parser,
+    input::{Input, Stream},
 };
 use lexer::Token;
 use logos::Logos;
-use parsers::decl::parser;
 pub use parsers::decl::Decl;
+use parsers::decl::parser;
 
+mod byte_parser;
 mod lexer;
 mod parsers;
 

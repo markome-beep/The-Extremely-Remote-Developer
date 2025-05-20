@@ -21,15 +21,18 @@
 		});
 		app.stage.hitArea = app.screen;
 
-		await init_game(app.stage, appCtx.gameData);
+		appCtx.stage = await init_game(app.stage, appCtx.gameData);
 
 		let timeAccum = 0;
-		const tickThreshold = 10;
-		app.ticker.add((ticker) => {
+		const tickThreshold = 60;
+
+		app.ticker.add(async (ticker) => {
 			timeAccum += ticker.deltaTime;
 			fps = (1 / ticker.deltaTime) * app.ticker.FPS;
-			if (timeAccum > tickThreshold) {
+
+			while (timeAccum > tickThreshold) {
 				timeAccum -= tickThreshold;
+				const newBotState = await appCtx.gameData.tick();
 			}
 		});
 	};
